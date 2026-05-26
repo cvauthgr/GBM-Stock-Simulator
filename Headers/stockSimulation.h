@@ -21,6 +21,7 @@ private :
     const int m_numberOfValues { } ;
     int m_index { 0 } ;
     std::vector< stockPriceAndTimeIndex > m_simulationOutput { } ;
+    std::normal_distribution<double> m_shockDist{ 0.0, 1.0 } ;
     const double m_dt = 1.0/252.0 ;
 
 public :
@@ -33,11 +34,11 @@ public :
 
     std::vector< stockPriceAndTimeIndex > getStockValues(){ return m_simulationOutput ; }
 
-    double getPreviousStockPrice(){ return m_previousStockPrice ; } const
-    double getDriftRate(){ return m_driftRate ; } const
-    double getVolatility(){ return m_volatility ; } const
-    double getShock(){ return m_shock ; } const
-    double getNumberOfValues(){ return m_numberOfValues ; } const
+    const double getPreviousStockPrice(){ return m_previousStockPrice ; }
+    const double getDriftRate(){ return m_driftRate ; }
+    const double getVolatility(){ return m_volatility ; }
+    const double getShock(){ return m_shock ; }
+    const double getNumberOfValues(){ return m_numberOfValues ; }
 
     void mutatePreviousStockPrice( double newPreviousPrice ){ m_previousStockPrice = newPreviousPrice  ; }
     void mutateVolatility( double newVolatility ){ m_volatility = newVolatility ; }
@@ -68,9 +69,7 @@ public :
     {
         volatilityMovement() ;
 
-        std::normal_distribution<double> shockDist( 0.0, 1.0 );
-
-        m_shock = shockDist( random::mt ) * std::sqrt( m_dt ) ;
+        m_shock = m_shockDist( random::mt ) * std::sqrt( m_dt ) ;
 
         m_currentStockPrice = m_previousStockPrice * std::pow( std::numbers::e , ( m_driftRate * m_dt ) + ( m_volatility * m_shock ) ) ;
         m_previousStockPrice = m_currentStockPrice  ;
@@ -118,7 +117,7 @@ public :
     }
 
 };
-stockPriceSimulator createSimulationObject( int numberOfValues , double startingPrice , double volatility )
+inline stockPriceSimulator createSimulationObject( int numberOfValues , double startingPrice , double volatility )
 {
     stockPriceSimulator object { numberOfValues , startingPrice , volatility } ;
 

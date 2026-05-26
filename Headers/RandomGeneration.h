@@ -18,18 +18,18 @@ inline thread_local std::mt19937_64  mt { generate() } ; //Can be called from an
 //otherwise all threads use the same random value at each respective simualation , mt19937_64 to avoid repetitiond in random number generations
 
 
-double getReal(double min , double max)
+inline double getReal(double min , double max)
 {
     return std::uniform_real_distribution<double>{ min , max }(mt) ;
 }
 
-int getInt( int min , int max )
+inline int getInt( int min , int max )
 {
     return std::uniform_int_distribution<int>{ min , max }(mt) ;
 }
 
 template <typename T>
-T fairChance( T variable )
+inline T fairChance( T variable )
 {
     T fairProbability { 0.5 } ;
     T randomProbability { random::getReal( 0.0 , 1.0 ) } ;
