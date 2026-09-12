@@ -2,7 +2,7 @@
 
 #include <random>
 
-namespace random
+namespace prng
 {
 
 inline std::mt19937_64 generate()
@@ -32,7 +32,7 @@ template <typename T>
 inline T fairChance( T variable )
 {
     T fairProbability { 0.5 } ;
-    T randomProbability { random::getReal( 0.0 , 1.0 ) } ;
+    T randomProbability { prng::getReal( 0.0 , 1.0 ) } ;
 
     if( randomProbability <= fairProbability )
         return variable ;

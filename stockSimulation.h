@@ -27,18 +27,18 @@ private :
 public :
 
     explicit stockPriceSimulator( int numberOfValues , double startingPrice ,double volatility )
-             : m_numberOfValues { numberOfValues } ,
-               m_previousStockPrice { startingPrice } ,
-               m_volatility { volatility }
-    {}
+             : m_previousStockPrice { startingPrice } ,
+               m_volatility { volatility } ,
+               m_numberOfValues { numberOfValues }  
+               {}
 
     std::vector< stockPriceAndTimeIndex > getStockValues(){ return m_simulationOutput ; }
 
-    const double getPreviousStockPrice(){ return m_previousStockPrice ; }
-    const double getDriftRate(){ return m_driftRate ; }
-    const double getVolatility(){ return m_volatility ; }
-    const double getShock(){ return m_shock ; }
-    const double getNumberOfValues(){ return m_numberOfValues ; }
+    double getPreviousStockPrice() const { return m_previousStockPrice ; } 
+    double getDriftRate() const { return m_driftRate ; }
+    double getVolatility() const { return m_volatility ; }
+    double getShock() const { return m_shock ; }
+    double getNumberOfValues() const { return m_numberOfValues ; }
 
     void mutatePreviousStockPrice( double newPreviousPrice ){ m_previousStockPrice = newPreviousPrice  ; }
     void mutateVolatility( double newVolatility ){ m_volatility = newVolatility ; }
@@ -48,19 +48,19 @@ public :
 
     void volatilityMovement()
     {
-        double randomChance { random::getReal( 0.0 , 1.0 ) } ;
+        double randomChance { prng::getReal( 0.0 , 1.0 ) } ;
         double suddenVolatilityMovement = m_volatility * std::sqrt( m_dt ) ;
 
         if( m_volatility < 1 && m_volatility > 0 )
         {
             if( randomChance <= 0.68 )
-                m_volatility += random::fairChance(suddenVolatilityMovement) ;
+                m_volatility += prng::fairChance(suddenVolatilityMovement) ;
             else if( randomChance <= 0.95 )
-                m_volatility += 2*random::fairChance(suddenVolatilityMovement) ;
+                m_volatility += 2*prng::fairChance(suddenVolatilityMovement) ;
             else if( randomChance <= 0.99 )
-                m_volatility += 3*random::fairChance(suddenVolatilityMovement) ;
+                m_volatility += 3*prng::fairChance(suddenVolatilityMovement) ;
             else
-                m_volatility += 4*random::fairChance(suddenVolatilityMovement) ;
+                m_volatility += 4*prng::fairChance(suddenVolatilityMovement) ;
         }
 
     }
@@ -69,7 +69,7 @@ public :
     {
         volatilityMovement() ;
 
-        m_shock = m_shockDist( random::mt ) * std::sqrt( m_dt ) ;
+        m_shock = m_shockDist( prng::mt ) * std::sqrt( m_dt ) ;
 
         m_currentStockPrice = m_previousStockPrice * std::pow( std::numbers::e , ( m_driftRate * m_dt ) + ( m_volatility * m_shock ) ) ;
         m_previousStockPrice = m_currentStockPrice  ;
@@ -83,7 +83,7 @@ public :
     void executeSimulation()
     {
         std::normal_distribution<double> driftRateDist( 0.1 , 0.05 );
-        m_driftRate = driftRateDist( random::mt ) ;
+        m_driftRate = driftRateDist( prng::mt ) ;
 
         for( int index = 0 ; index < m_numberOfValues ; ++ index )
             collectAllPrices() ;
